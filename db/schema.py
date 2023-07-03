@@ -21,7 +21,4 @@ class Messages(Base):
         self.user_id = user_id
         self.message = message
 
-class Employee(Base):
-    __tablename__ = 'employees'
-    id = Column(BigInteger, primary_key=True)
-    messages = Column(JSONB)
+

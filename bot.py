@@ -1,6 +1,9 @@
 from aiogram import Bot, Dispatcher, types, executor
 from config import Telegram
 from db.commands import db
+from chat_gpt_request import requests_gpt
+
+
 bot = Bot(Telegram.api_key)
 dp = Dispatcher(bot)
 
@@ -12,11 +15,14 @@ async def create_user(message):
 
 
 @dp.message_handler()
-async def messages(message: types.Message):
-    await db.add_message(message.from_user.id, message.text, "user")
-    response = 'Ответ'
-    await db.add_message(message.from_user.id, response, "assistant")
-    await message.answer(message.text)
+async def process_message(message: types.Message):
+    text = db.add_message(message.from_user.id, message.text, "user")
+    print(f"text{text}")
+    response = await requests_gpt(text)
+    print(f"чresponse{response}")
+    db.add_message(message.from_user.id, response, "assistant")
+    await message.answer(response)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

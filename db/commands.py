@@ -31,7 +31,7 @@ class DbCommands(Database):
         session.commit()
         session.close()
 
-    async def create_user(self, id, nickname):
+    def create_user(self, id, nickname):
         session = self.maker()
         is_user = session.query(schema.Users).filter_by(id=id).first()
         if not is_user:
@@ -40,7 +40,7 @@ class DbCommands(Database):
             session.commit()
             session.close()
 
-    async def add_message(self, id, text, role):
+    def add_message(self, id, text, role):
         messages = [
             {"role": "assistant", "content": "Добро пожаловать в помощника по знакомствам!"}
         ]
@@ -54,14 +54,16 @@ class DbCommands(Database):
                 session.add(message)
                 session.commit()
                 session.close()
-                print('первая запись')
+                return messages
             else:
                 print('вторая')
                 update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values\
                     ({schema.Messages.message: existing_message.message + [{'role': role, 'content': text}]})
                 session.execute(update_messages)
                 session.commit()
+                dialog = session.query(schema.Messages).filter_by(user_id=id).first()
                 session.close()
+                return dialog.message
 
 
 
