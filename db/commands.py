@@ -66,10 +66,4 @@ class DbCommands(Database):
                 return dialog.message
 
 
-
-
-
-
-
 db = DbCommands()
-
