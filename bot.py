@@ -14,12 +14,21 @@ async def create_user(message):
     await bot.send_message(message.from_user.id, f'ИДИ НАХУЙ, @{message.from_user.username}!')
 
 
-@dp.message_handler()
+@dp.message_handler(content_types=types.ContentType.TEXT)
 async def process_message(message: types.Message):
     text = db.add_message(message.from_user.id, message.text, "user")
     print(f"text{text}")
     response = await requests_gpt(text)
     print(f"чresponse{response}")
+    db.add_message(message.from_user.id, response, "assistant")
+    await message.answer(response)
+
+
+@dp.message_handler(content_types=types.ContentType.VOICE)
+def process_voice_message(voice_message: types.Message):
+    text = convert_to_text(voice_message.voice)
+    db.add_message(message.from_user.id, text, "user")
+    response = await requests_gpt(text)
     db.add_message(message.from_user.id, response, "assistant")
     await message.answer(response)
 
