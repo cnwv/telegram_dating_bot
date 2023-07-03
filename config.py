@@ -12,7 +12,6 @@ class DB:
     db_name = getenv('DB_NAME')
     port = getenv('PORT')
     URL = f"postgresql://{user_db}:{password}@{host}:{port}/{db_name}"
-    engine = 'postgresql://postgres:qwerty@localhost:5433/dating_bot'
 
 
 class Telegram:
