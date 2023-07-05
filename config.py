@@ -16,9 +16,11 @@ class DB:
 
 class Telegram:
     api_key = getenv('BOT_TOKEN')
+    start_text = getenv('START_TEXT')
 
 
 class OpenAI:
     api_key = getenv('OPEN_AI_TOKEN')
+    promt = getenv('PROMT_GPT')
 
 

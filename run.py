@@ -12,4 +12,5 @@ commands.register_handlers_commands(dp)
 messages.register_handlers_message(dp)
 
 
+
 executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
