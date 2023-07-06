@@ -1,6 +1,6 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import Column, BigInteger, String, Boolean, null, ForeignKey
+from sqlalchemy import Column, BigInteger, String, Boolean, ForeignKey
 
 Base = declarative_base()
 
@@ -20,13 +20,3 @@ class Messages(Base):
     def __init__(self, user_id, message):
         self.user_id = user_id
         self.message = message
-
-
-class Initial_Data(Base):
-    __tablename__ = 'initial_data'
-    user_id = Column(BigInteger, ForeignKey('users.id'), primary_key=True)
-    data = Column(String)
-
-    def __init__(self, user_id, data):
-        self.user_id = user_id
-        self.data = data

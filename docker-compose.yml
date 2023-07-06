@@ -1,0 +1,18 @@
+version: '3'
+services:
+  dating_bot_telegram:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: Dasdas123
+      POSTGRES_USER: admin
+      POSTGRES_DB: dating_bot
+    ports:
+      - 5431:5432
