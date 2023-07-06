@@ -8,11 +8,12 @@ services:
       - ./data:/app/data
     depends_on:
       - db
+    restart: always
   db:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: Dasdas123
+      POSTGRES_PASSWORD: password
       POSTGRES_USER: admin
-      POSTGRES_DB: dating_bot
     ports:
-      - 5431:5432
+      - 5432:5432
+    restart: always
