@@ -8,66 +8,35 @@ from bot.keyboards import inlineKb
 
 
 class offline_date_fields(StatesGroup):
-    location = State()
-    appearance = State()
-    hobby = State()
-    other_info = State()
+    info = State()
 
 
 class online_date_fields(StatesGroup):
-    status = State()
-    hobby = State()
-    sex = State()
+    info = State()
 
 
 # Вопрос-ответ на первый вопрос
-is_online = ['1.Знакомство по сети или вживую? Ответ: вживую ',
-             '1.Знакомство по сети или вживую? Ответ: Знакомство по сети']
+is_online = ['Вопрос:Знакомство по сети или вживую? Ответ: вживую ',
+             'Вопрос:Знакомство по сети или вживую? Ответ: Знакомство по сети']
 
 
 # Первый блок для общения вживую
 @dp.callback_query_handler(text='life')
 async def state_machine_start(message: types.CallbackQuery):
-    await offline_date_fields.location.set()
-    await message.message.answer('Где ты находишься?')
+    await offline_date_fields.info.set()
+    await message.message.answer(
+        'Где ты находишься? Как выглядит субъект для знакомства? Что она или он делает? Девушка это или парень? Расскажи как можно больше подробностей?')
 
 
-# Первый,второй вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.location)
-async def load_location(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data[12] = f'{is_online[0]}2.Где ты находишься? Ответ:{message.text}'
-    await offline_date_fields.next()
-    await message.reply('Как выглядит субъект для знакомства?')
-
-
-# Третий вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.appearance)
-async def load_appearance(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data[3] = f"3.Как выглядит субъект для знакомства? Ответ:{message.text}"
-    await offline_date_fields.next()
-    await message.reply('Что она или он делает?')
-
-
-# Четвертый вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.hobby)
-async def load_appearance(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data[4] = f"4.Что она или он делает? Ответ:{message.text}"
-    await offline_date_fields.next()
-    await message.reply('Расскажи подробности')
-
-
-# Пятый вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.other_info)
+@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
 async def load_appearance(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
-        data[4] = f"5.Расскажи подробности Ответ:{message.text}"
+        data[0] = f"{is_online[0]}Вопрос: Как выглядит субъект для знакомства? Что она или он делает? Девушка это или парень? " \
+                  f"Расскажи как можно больше подробностей? Ответ: {message.text}"
         data_dict = dict(data)
-        for item in data_dict.values():
-            form += item
+        form += data_dict[0]
+        await message.answer(form)
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
         text = db.add_message(message.from_user.id, form, "user")
@@ -81,37 +50,21 @@ async def load_appearance(message: types.Message, state: FSMContext):
 # Второй блок для общения по сети
 @dp.callback_query_handler(text='online')
 async def state_machine_start_(message: types.CallbackQuery):
-    await online_date_fields.status.set()
-    await message.message.answer('Хочешь начать общение или продолжить?')
+    await online_date_fields.info.set()
+    await message.message.answer('Хочешь начать общение или продолжить? Какие увлечения у субъекта твоего интереса? '
+                                 'Девушка это или парень? Расскажи всё, что поможет подойти к ответу наиболее конкретно')
 
 
-# Первый, второй вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.status)
-async def load_status(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data[12] = f'{is_online[1]}2.Хочешь начать общение или продолжить? Ответ:{message.text}'
-    await online_date_fields.next()
-    await message.reply('Какие увлечения?')
-
-
-# Третий вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.hobby)
-async def load_status(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data[3] = f' 3.Какие увлечения? Ответ:{message.text}'
-    await online_date_fields.next()
-    await message.reply('Девушка это или парень?')
-
-
-# Четвертый вопрос
-@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.sex)
+@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
 async def load_status(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
-        data[4] = f'4.Девушка это или парень? Ответ:{message.text}'
+        data[0] = f'{is_online} Вопрос: Хочешь начать общение или продолжить? ' \
+                  f'Какие увлечения у субъекта твоего интереса? ' \
+                  f'Девушка это или парень? ' \
+                  f'Расскажи всё, что поможет подойти к ответу наиболее конкретно  Ответ: {message.text}'
         data_dict = dict(data)
-        for item in data_dict.values():
-            form += item
+        form += data_dict[0]
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
         text = db.add_message(message.from_user.id, form, "user")
