@@ -1,5 +1,5 @@
-FROM python3.9:latest
-# FROM ubuntu:latest
+# FROM python3.9:latest
+FROM ubuntu:latest
 
 RUN apt-get update && apt-get install -y \
     python3 \
