@@ -1,4 +1,9 @@
 venv
 .pyc
 .env
-.idea
+utils/speech2text.py
+utils/speech_to_text.py
+utils/convert_ffmeg.py
+utils/convert_ffmeg.py
+utils/vosk-model-small-ru-0.4
+
