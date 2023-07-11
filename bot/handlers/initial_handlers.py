@@ -21,14 +21,14 @@ is_online = ['Вопрос:Знакомство по сети или вживу�
 
 
 # Первый блок для общения вживую
-@dp.callback_query_handler(text='life')
+# @dp.callback_query_handler(text='life')
 async def state_machine_start(message: types.CallbackQuery):
     await offline_date_fields.info.set()
     await message.message.answer(
         'Где ты находишься? Как выглядит субъект для знакомства? Что она или он делает? Девушка это или парень? Расскажи как можно больше подробностей?')
 
 
-@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
+# @dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
 async def load_appearance(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
@@ -48,14 +48,14 @@ async def load_appearance(message: types.Message, state: FSMContext):
 
 
 # Второй блок для общения по сети
-@dp.callback_query_handler(text='online')
+# @dp.callback_query_handler(text='online')
 async def state_machine_start_(message: types.CallbackQuery):
     await online_date_fields.info.set()
     await message.message.answer('Хочешь начать общение или продолжить? Какие увлечения у субъекта твоего интереса? '
                                  'Девушка это или парень? Расскажи всё, что поможет подойти к ответу наиболее конкретно')
 
 
-@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
+# @dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
 async def load_status(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
@@ -78,3 +78,5 @@ async def load_status(message: types.Message, state: FSMContext):
 def register_handlers_callbacks(dp: Dispatcher):
     dp.register_callback_query_handler(state_machine_start, text='life')
     dp.register_callback_query_handler(state_machine_start_, text='online')
+    dp.register_message_handler(load_status, content_types=types.ContentType.TEXT, state=online_date_fields.info)
+    dp.register_message_handler(load_appearance, content_types=types.ContentType.TEXT, state=offline_date_fields.info)
