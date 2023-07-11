@@ -22,9 +22,9 @@ async def process_message(message: types.Message):
 
 async def process_voice_message(message: types.Message):
     await message.answer('Я понимаю только текст.')
-#     message_file = message.voice
-#     downpath = WORKDIR + "/" + message_file.file_unique_id
-#     await bot.download(file=message_file, destination=downpath)
+    # message_file = message.voice
+    # downpath = WORKDIR + "/" + message_file.file_unique_id
+    # await bot.download(file=message_file, destination=downpath)
 
 
 def register_handlers_message(dp: Dispatcher):
