@@ -26,6 +26,8 @@ async def state_machine_start(message: types.CallbackQuery):
     await offline_date_fields.info.set()
     await message.message.answer(
         'Где ты находишься? Как выглядит субъект для знакомства? Что она или он делает? Девушка это или парень? Расскажи как можно больше подробностей?')
+    await message.message.answer("__Например, напишите боту после выбора знакомства онлайн «Хочу начать общение с девушкой, она любит большой теннис и вечеринки, а ещё слушает хорошую музыку и живёт в Санкт Петербурге."
+                                 " Что ей написать?» В случае, если ответа умного бота вам не подходит, можете попросить сгенерировать новый с теми же вводными.__")
 
 
 # @dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
@@ -53,6 +55,9 @@ async def state_machine_start_(message: types.CallbackQuery):
     await online_date_fields.info.set()
     await message.message.answer('Хочешь начать общение или продолжить? Какие увлечения у субъекта твоего интереса? '
                                  'Девушка это или парень? Расскажи всё, что поможет подойти к ответу наиболее конкретно')
+    await message.message.answer(
+        "__Например, напишите боту после выбора знакомства онлайн «Хочу начать общение с девушкой, она любит большой теннис и вечеринки, а ещё слушает хорошую музыку и живёт в Санкт Петербурге."
+        " Что ей написать?» В случае, если ответа умного бота вам не подходит, можете попросить сгенерировать новый с теми же вводными.__")
 
 
 # @dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
