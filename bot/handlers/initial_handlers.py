@@ -16,8 +16,8 @@ class online_date_fields(StatesGroup):
 
 
 # Вопрос-ответ на первый вопрос
-is_online = ['Вопрос:Знакомство по сети или вживую? Ответ: вживую ',
-             'Вопрос:Знакомство по сети или вживую? Ответ: Знакомство по сети']
+is_online = ['Знакомство вживую. Подробности:',
+             'Знакомство по сети. Подробности:']
 
 
 # Первый блок для общения вживую
@@ -34,8 +34,7 @@ async def state_machine_start(message: types.CallbackQuery):
 async def load_appearance(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
-        data[0] = f"{is_online[0]}Вопрос: Как выглядит субъект для знакомства? Что она или он делает? Девушка это или парень? " \
-                  f"Расскажи как можно больше подробностей? Ответ: {message.text}"
+        data[0] = f"{is_online[0]} {message.text}"
         data_dict = dict(data)
         form += data_dict[0]
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
@@ -61,10 +60,7 @@ async def state_machine_start_(message: types.CallbackQuery):
 async def load_status(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
-        data[0] = f'{is_online} Вопрос: Хочешь начать общение или продолжить? ' \
-                  f'Какие увлечения у субъекта твоего интереса? ' \
-                  f'Девушка это или парень? ' \
-                  f'Расскажи всё, что поможет подойти к ответу наиболее конкретно  Ответ: {message.text}'
+        data[0] = f'{is_online[1]} {message.text}'
         data_dict = dict(data)
         form += data_dict[0]
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
