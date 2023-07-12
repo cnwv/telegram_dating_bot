@@ -10,13 +10,13 @@ async def requests_gpt(text, id):
     api_key = apy_key_list.pop(0)
     openai.api_key = api_key
     apy_key_list.append(api_key)
-    dialog = await db.add_message(id, text, "user")
+    dialog = db.add_message(id, text, "user")
     print(dialog)
     print('GPT request')
     completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                               messages=dialog, max_tokens=2000)
     response = completion.choices[0].message.content
-    await db.add_message(id, response, 'assistant')
+    db.add_message(id, response, 'assistant')
     return response
 
 

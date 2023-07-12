@@ -58,6 +58,7 @@ async def load_status(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data[0] = f'{is_online[1]} {message.text}'
         data_dict = dict(data)
+        print(data_dict[0])
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
         response = await requests_gpt(data_dict[0], message.from_user.id)

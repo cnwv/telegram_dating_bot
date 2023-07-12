@@ -10,7 +10,6 @@ from aiogram.dispatcher import FSMContext
 @dp.message_handler(commands=['start'])
 async def create_user(message: types.Message):
     db.create_user(message.from_user.id, message.from_user.username)
-
     await message.answer(f'{Telegram.start_text}', reply_markup=initial_data)
 
 
