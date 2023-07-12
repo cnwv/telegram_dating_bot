@@ -38,7 +38,6 @@ async def load_appearance(message: types.Message, state: FSMContext):
                   f"Расскажи как можно больше подробностей? Ответ: {message.text}"
         data_dict = dict(data)
         form += data_dict[0]
-        await message.answer(form)
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
         text = db.add_message(message.from_user.id, form, "user")
