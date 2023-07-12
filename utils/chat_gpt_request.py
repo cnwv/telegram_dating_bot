@@ -1,16 +1,24 @@
 import openai
 from config import OpenAI
 import asyncio
-openai.api_key = OpenAI.api_key
+from db.commands import db
+
+apy_key_list = eval(OpenAI.api_key)
 
 
-async def requests_gpt(text):
-    print(text)
+async def requests_gpt(text, id):
+    api_key = apy_key_list.pop(0)
+    openai.api_key = api_key
+    apy_key_list.append(api_key)
+    dialog = db.add_message(id, text, "user")
+    print(dialog)
     print('GPT request')
     completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-                                              messages=text)
+                                              messages=dialog, max_tokens=2000)
     response = completion.choices[0].message.content
+    db.add_message(id, response, 'assistant')
     return response
+
 
 if __name__ == '__main__':
     async def main():

@@ -12,11 +12,11 @@ WORKDIR = str(pathlib.Path(__file__).parent.absolute())
 async def process_message(message: types.Message):
     sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                      sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
-    text = db.add_message(message.from_user.id, message.text, "user")
-    response = await requests_gpt(text)
+    # text = db.add_message(message.from_user.id, message.text, "user")
+    response = await requests_gpt(message.text, message.from_user.id)
     # response = message.text - echo mod
     await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
-    db.add_message(message.from_user.id, response, "assistant")
+    # db.add_message(message.from_user.id, response, "assistant")
     await message.answer(response, reply_markup=inlineKb)
 
 

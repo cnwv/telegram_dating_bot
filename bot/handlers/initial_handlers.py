@@ -32,17 +32,13 @@ async def state_machine_start(message: types.CallbackQuery):
 
 # @dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
 async def load_appearance(message: types.Message, state: FSMContext):
-    form = ''
     async with state.proxy() as data:
         data[0] = f"{is_online[0]} {message.text}"
         data_dict = dict(data)
-        form += data_dict[0]
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
-        text = db.add_message(message.from_user.id, form, "user")
-        response = await requests_gpt(text)
+        response = await requests_gpt(data_dict[0], message.from_user.id)
         await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
-        db.add_message(message.from_user.id, response, "assistant")
         await message.answer(response, reply_markup=inlineKb)
     await state.finish()
 
@@ -62,13 +58,10 @@ async def load_status(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data[0] = f'{is_online[1]} {message.text}'
         data_dict = dict(data)
-        form += data_dict[0]
         sticker = await bot.send_sticker(chat_id=message.from_user.id,
                                          sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
-        text = db.add_message(message.from_user.id, form, "user")
-        response = await requests_gpt(text)
+        response = await requests_gpt(data_dict[0], message.from_user.id)
         await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
-        db.add_message(message.from_user.id, response, "assistant")
         await message.answer(response, reply_markup=inlineKb)
     await state.finish()
 
