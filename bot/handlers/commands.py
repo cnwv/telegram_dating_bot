@@ -11,7 +11,7 @@ from aiogram.dispatcher import FSMContext
 async def create_user(message: types.Message):
     db.create_user(message.from_user.id, message.from_user.username)
 
-    await message.answer(f'{Telegram.start_text}!', reply_markup=initial_data)
+    await message.answer(f'{Telegram.start_text}', reply_markup=initial_data)
 
 
 @dp.message_handler(commands=['restart'])
