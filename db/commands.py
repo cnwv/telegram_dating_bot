@@ -23,7 +23,7 @@ class DbCommands(Database):
         session.commit()
         session.close()
 
-    def add_message(self, id, text, role):
+    async def add_message(self, id, text, role):
         messages = [
             {"role": "assistant", "content": f"{OpenAI.promt}"}
         ]
