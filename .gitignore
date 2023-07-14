@@ -1,6 +1,6 @@
 venv
 .pyc
-.envlocalidle
+.env
 utils/speech2text.py
 utils/speech_to_text.py
 utils/convert_ffmeg.py

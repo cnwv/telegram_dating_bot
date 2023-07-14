@@ -3,7 +3,6 @@ from aiogram import types, Dispatcher
 from utils.chat_gpt_request import requests_gpt
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from db.commands import db
 from bot.keyboards import inlineKb
 
 
@@ -21,7 +20,7 @@ is_online = ['Знакомство вживую. Подробности:',
 
 
 # Первый блок для общения вживую
-# @dp.callback_query_handler(text='life')
+@dp.callback_query_handler(text='life')
 async def state_machine_start(message: types.CallbackQuery):
     await offline_date_fields.info.set()
     await message.message.answer(
@@ -30,7 +29,7 @@ async def state_machine_start(message: types.CallbackQuery):
         f'Например, напишите боту после выбора знакомства онлайн «Хочу начать общение с девушкой, она любит большой теннис и вечеринки, а ещё слушает хорошую музыку и живёт в Санкт Петербурге.Что ей написать?» В случае, если ответа умного бота вам не подходит, можете попросить сгенерировать новый с теми же вводными.')
 
 
-# @dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
+@dp.message_handler(content_types=types.ContentType.TEXT, state=offline_date_fields.info)
 async def load_appearance(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data[0] = f"{is_online[0]} {message.text}"
@@ -44,7 +43,7 @@ async def load_appearance(message: types.Message, state: FSMContext):
 
 
 # Второй блок для общения по сети
-# @dp.callback_query_handler(text='online')
+@dp.callback_query_handler(text='online')
 async def state_machine_start_(message: types.CallbackQuery):
     await online_date_fields.info.set()
     await message.message.answer(f'Хочешь начать общение или продолжить? Какие увлечения у субъекта твоего интереса? '
@@ -52,7 +51,7 @@ async def state_machine_start_(message: types.CallbackQuery):
                                  f'Например, напишите боту после выбора знакомства онлайн «Хочу начать общение с девушкой, она любит большой теннис и вечеринки, а ещё слушает хорошую музыку и живёт в Санкт Петербурге.Что ей написать?» В случае, если ответа умного бота вам не подходит, можете попросить сгенерировать новый с теми же вводными.')
 
 
-# @dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
+@dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)
 async def load_status(message: types.Message, state: FSMContext):
     form = ''
     async with state.proxy() as data:
@@ -67,8 +66,8 @@ async def load_status(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-def register_handlers_callbacks(dp: Dispatcher):
-    dp.register_callback_query_handler(state_machine_start, text='life')
-    dp.register_callback_query_handler(state_machine_start_, text='online')
-    dp.register_message_handler(load_status, content_types=types.ContentType.TEXT, state=online_date_fields.info)
-    dp.register_message_handler(load_appearance, content_types=types.ContentType.TEXT, state=offline_date_fields.info)
+def register_handlers_callbacks(dpt: Dispatcher):
+    dpt.register_callback_query_handler(state_machine_start, text='life')
+    dpt.register_callback_query_handler(state_machine_start_, text='online')
+    dpt.register_message_handler(load_status, content_types=types.ContentType.TEXT, state=online_date_fields.info)
+    dpt.register_message_handler(load_appearance, content_types=types.ContentType.TEXT, state=offline_date_fields.info)

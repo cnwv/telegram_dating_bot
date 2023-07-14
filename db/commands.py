@@ -2,7 +2,7 @@ from db.engine import Database
 from db import schema
 from sqlalchemy import update
 from config import OpenAI
-
+import logging
 
 class DbCommands(Database):
     def __init__(self):
