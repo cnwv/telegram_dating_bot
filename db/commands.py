@@ -13,14 +13,20 @@ class DbCommands(Database):
         session = self.maker()
         is_user = session.query(schema.Users).filter_by(id=id).first()
         if not is_user:
+            print('попали в юзерс')
             user = schema.Users(id=id, nickname=nickname, premium=False)
             session.add(user)
+            session.commit()
+            session.close()
+            session = self.maker()
+            messages = schema.Messages(user_id=id, message=None, is_online=None)
+            session.add(messages)
             session.commit()
             session.close()
 
     def delete_message(self, user_id):
         session = self.maker()
-        session.query(schema.Messages).filter(schema.Messages.user_id == user_id).delete(synchronize_session=False)
+        session.query(schema.Messages).filter(schema.Messages.user_id == user_id).update({"message": None})
         session.commit()
         session.close()
 
@@ -31,15 +37,20 @@ class DbCommands(Database):
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:
-            existing_message = session.query(schema.Messages).filter_by(user_id=id).first()
-            if not existing_message:
+            existing_message = session.query(schema.Messages.message).filter_by(user_id=id).first()
+            print(type(existing_message))
+            print(existing_message)
+            if existing_message[0] is None:
+                print('null')
                 messages.append({"role": role, "content": text})
-                message = schema.Messages(user_id=user.id, message=messages)
-                session.add(message)
+                # message = schema.Messages(user_id=user.id, message=messages)
+                update_message = update(schema.Messages).where(schema.Messages.user_id == id).values(message=messages)
+                session.execute(update_message)
                 session.commit()
                 session.close()
                 return messages
             else:
+                print('not null')
                 update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values \
                     ({schema.Messages.message: existing_message.message + [{'role': role, 'content': text}]})
                 session.execute(update_messages)
@@ -48,5 +59,33 @@ class DbCommands(Database):
                 session.close()
                 return dialog.message
 
+    def add_type_of_relationship(self, id, is_online):
+        print(is_online)
+        session = self.maker()
+        user = session.query(schema.Users).filter_by(id=id).first()
+        if user:
+            message = session.query(schema.Messages).filter_by(user_id=id).first()
+            if message:
+                update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(is_online=is_online)
+                session.execute(update_status)
+                session.commit()
+                session.close()
+            else:
+                pass
+        else:
+            pass
+
+    def empty_message(self, id):
+        session = self.maker()
+        message = session.query(schema.Messages).filter_by(user_id=id).first()
+        if message is None:
+            messages = schema.Messages(user_id=id, message=None, is_online=None)
+            session.add(messages)
+            session.commit()
+        session.close()
+
 
 db = DbCommands()
+if __name__ == '__main__':
+    db.create_user('1', 'loh')
+
