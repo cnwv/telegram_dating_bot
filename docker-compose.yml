@@ -10,10 +10,16 @@ services:
       - db
     restart: always
   db:
-    image: postgres
-    environment:
-      POSTGRES_PASSWORD: Dasdas123
-      POSTGRES_USER: postgres
-    ports:
-      - 5433:5432
     restart: always
+    image: postgres:latest
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+#    volumes:
+#      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=Dasdas123
+    ports:
+      - "5432:5432"
