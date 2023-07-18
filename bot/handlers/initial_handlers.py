@@ -7,10 +7,9 @@ from bot.keyboards import inlineKb
 from db.commands import db
 
 
-
 # Вопрос-ответ на первый вопрос
-is_online = ['Знакомство вживую. Подробности:',
-             'Знакомство по сети. Подробности:']
+# is_online = ['Знакомство вживую. Подробности:',
+#              'Знакомство по сети. Подробности:']
 
 
 # Первый блок для общения вживую
@@ -24,7 +23,6 @@ async def state_machine_start(message: types.CallbackQuery):
     db.add_type_of_relationship(message.from_user.id, False)
 
 
-
 # Второй блок для общения по сети
 @dp.callback_query_handler(text='online')
 async def state_machine_start_(message: types.CallbackQuery):
@@ -36,7 +34,6 @@ async def state_machine_start_(message: types.CallbackQuery):
     print('Нажата кнопка')
 
     db.add_type_of_relationship(message.from_user.id, True)
-
 
 
 # @dp.message_handler(content_types=types.ContentType.TEXT, state=online_date_fields.info)

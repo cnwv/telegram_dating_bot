@@ -5,11 +5,26 @@ from db.commands import db
 
 apy_key_list = eval(OpenAI.api_key)
 
+message_prefix = ['Знакомство вживую. Подробности:',
+                  'Знакомство по сети. Подробности:']
+
 
 async def requests_gpt(text, id):
     api_key = apy_key_list.pop(0)
     openai.api_key = api_key
     apy_key_list.append(api_key)
+    state = db.get_message_state(id)
+    if state:
+        # true - онлайн знакомство
+        text = f"{message_prefix[1]} {text}"
+        db.set_message_state_to_none(id)
+    elif state is False:
+        # false - офлайн знакомство
+        text = f"{message_prefix[0]} {text}"
+        db.set_message_state_to_none(id)
+    else:
+        # none - без условия
+        pass
     dialog = db.add_message(id, text, "user")
     print(dialog)
     print('GPT request')
