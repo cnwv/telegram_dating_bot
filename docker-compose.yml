@@ -21,8 +21,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    volumes:
-      - ./.database/postgres/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=Dasdas123
     ports:
