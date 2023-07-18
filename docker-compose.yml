@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     command:
       - "http"
-      - "--authtoken=1t7K3MPPy8a2gGRyF1IurV2pw6K_2Rg92AZwEr8vam2V6nuYn"
+      - "--authtoken=2ShYZndAqAWS9OevebpYBmC16kW_DWq59vnXBftxzAjAiPU1"
       - "--region=eu"
       - "--log=stdout"
       - "dating_bot_telegram:8080"
