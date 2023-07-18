@@ -9,6 +9,10 @@ services:
     depends_on:
       - db
     restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - dating_bot_network
   db:
     restart: always
     image: postgres:latest
@@ -17,9 +21,27 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-#    volumes:
-#      - ./.database/postgres/data:/var/lib/postgresql/data
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=Dasdas123
     ports:
       - "5432:5432"
+    networks:
+      - dating_bot_network
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "http"
+      - "--authtoken=1t7K3MPPy8a2gGRyF1IurV2pw6K_2Rg92AZwEr8vam2V6nuYn"
+      - "--region=eu"
+      - "--log=stdout"
+      - "dating_bot_telegram:8080"
+    ports:
+      - "4040:4040"
+    networks:
+      - dating_bot_network
+
+networks:
+  dating_bot_network:
