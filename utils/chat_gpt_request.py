@@ -9,7 +9,7 @@ message_prefix = ['Знакомство вживую. Подробности:',
                   'Знакомство по сети. Подробности:']
 
 
-async def requests_gpt(text, id):
+async def requests_gpt(text, id, username=None):
     api_key = apy_key_list.pop(0)
     openai.api_key = api_key
     apy_key_list.append(api_key)
@@ -25,7 +25,8 @@ async def requests_gpt(text, id):
     else:
         # none - без условия
         pass
-    dialog = db.add_message(id, text, "user")
+    # отправляем username для ситуаций когда пользователь пропал из бд
+    dialog = db.add_message(id, text, "user", username)
     print(dialog)
     print('GPT request')
     completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",

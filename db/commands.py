@@ -30,7 +30,7 @@ class DbCommands(Database):
         session.commit()
         session.close()
 
-    def add_message(self, id, text, role):
+    def add_message(self, id, text, role, username=None):
         messages = [
             {"role": "assistant", "content": f"{OpenAI.promt}"}
         ]
@@ -58,6 +58,14 @@ class DbCommands(Database):
                 dialog = session.query(schema.Messages).filter_by(user_id=id).first()
                 session.close()
                 return dialog.message
+        else:
+            self.create_user(id, username)
+            messages.append({"role": role, "content": text})
+            update_message = update(schema.Messages).where(schema.Messages.user_id == id).values(message=messages)
+            session.execute(update_message)
+            session.commit()
+            session.close()
+            return messages
 
     def add_type_of_relationship(self, id, is_online):
         print(is_online)
