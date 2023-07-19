@@ -43,6 +43,6 @@ if __name__ == '__main__':
     app.on_startup.append(on_startup)
     web.run_app(
         app,
-        host='dating_bot_telegram',
+        host='0.0.0.0',
         port=8080,
     )
