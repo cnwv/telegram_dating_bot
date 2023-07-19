@@ -5,7 +5,7 @@ from aiohttp import web
 
 
 async def set_webhook():
-    webhook_uri = f'https://5644-2a0b-6204-41fa-9000-986b-16b5-53dd-85c2.ngrok-free.app{webhook_path}'
+    webhook_uri = f'89.19.209.18{webhook_path}'
     await bot.set_webhook(
         webhook_uri
     )
