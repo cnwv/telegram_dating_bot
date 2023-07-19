@@ -1,11 +1,11 @@
-from aiogram import executor, types
+from aiogram import types
 from create_bot import dp, app, webhook_path, bot
-from config import Telegram
+from config import Telegram, Ngrok
 from aiohttp import web
 
 
 async def set_webhook():
-    webhook_uri = f'89.19.209.18{webhook_path}'
+    webhook_uri = f'{Ngrok.url}{webhook_path}'
     await bot.set_webhook(
         webhook_uri
     )

@@ -13,7 +13,6 @@ services:
       - "8080:8080"
     networks:
       - dating_bot_network
-
   db:
     restart: always
     image: postgres:latest
@@ -28,14 +27,17 @@ services:
       - "5432:5432"
     networks:
       - dating_bot_network
-
-  nginx:
-    image: nginx:latest
+  ngrok:
+    image: ngrok/ngrok:latest
     restart: unless-stopped
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    command:
+      - "http"
+      - "--authtoken=1t7K3MPPy8a2gGRyF1IurV2pw6K_2Rg92AZwEr8vam2V6nuYn"
+      - "--region=eu"
+      - "--log=stdout"
+      - "dating_bot_telegram:8080"
     ports:
-      - "80:80"
+      - "4040:4040"
     networks:
       - dating_bot_network
 

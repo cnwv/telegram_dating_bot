@@ -24,3 +24,5 @@ class OpenAI:
     promt = getenv('PROMT_GPT')
 
 
+class Ngrok:
+    url = getenv('NGROK_URL')
