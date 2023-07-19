@@ -22,8 +22,7 @@ services:
       retries: 10
     environment:
       - POSTGRES_PASSWORD=Dasdas123
-     # бэкапы базы данных
-#    volumes:
-#      - ./.database/postgres/data:/var/lib/postgresql/data
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
