@@ -10,7 +10,7 @@ services:
       - db
     restart: always
     ports:
-      - "80:80"
+      - "8080:8080"
 
   db:
     restart: always
@@ -25,14 +25,14 @@ services:
     ports:
       - "5432:5432"
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    restart: unless-stopped
-    command:
-      - "start"
-      - "--all"
-      - "--log=stdout"
-      - "--config"
-      - "/ngrok.yml"
-    volumes:
-      - ./ngrok.yml:/ngrok.yml:ro
+#  ngrok:
+#    image: ngrok/ngrok:latest
+#    restart: unless-stopped
+#    command:
+#      - "start"
+#      - "--all"
+#      - "--log=stdout"
+#      - "--config"
+#      - "/ngrok.yml"
+#    volumes:
+#      - ./ngrok.yml:/ngrok.yml:ro

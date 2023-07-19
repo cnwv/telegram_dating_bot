@@ -2,5 +2,5 @@ version: "2"
 authtoken: 1t7K3MPPy8a2gGRyF1IurV2pw6K_2Rg92AZwEr8vam2V6nuYn
 tunnels:
   remote_service:
-    addr: dating_bot_telegram:80
+    addr: dating_bot_telegram:8080
     proto: http

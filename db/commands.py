@@ -85,7 +85,9 @@ class DbCommands(Database):
     def get_message_state(self, id):
         session = self.maker()
         message = session.query(schema.Messages).filter_by(user_id=id).first()
-        return message.is_online
+        if message:
+            return message.is_online
+        return None
 
 
 db = DbCommands()
