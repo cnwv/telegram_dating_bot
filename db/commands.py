@@ -75,6 +75,15 @@ class DbCommands(Database):
         else:
             pass
 
+    def empty_message(self, id):
+        session = self.maker()
+        message = session.query(schema.Messages).filter_by(user_id=id).first()
+        if message is None:
+            messages = schema.Messages(user_id=id, message=None, is_online=None)
+            session.add(messages)
+            session.commit()
+        session.close()
+
     def set_message_state_to_none(self, id):
         session = self.maker()
         update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(is_online=None)
