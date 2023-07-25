@@ -1,7 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 
@@ -16,7 +15,9 @@ class DB:
 
 class Telegram:
     api_key = getenv('BOT_TOKEN')
+    payment_key = getenv('PAYMENTS_TOKEN')
     start_text = getenv('START_TEXT')
+    expire_text = getenv('EXPIRE_TEXT')
 
 
 class OpenAI:

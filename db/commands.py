@@ -1,8 +1,9 @@
+import tiktoken
+
 from db.engine import Database
 from db import schema
 from sqlalchemy import update
 from config import OpenAI
-import logging
 
 
 class DbCommands(Database):
@@ -19,45 +20,61 @@ class DbCommands(Database):
             session.commit()
             session.close()
             session = self.maker()
-            messages = schema.Messages(user_id=id, message=None, is_online=None)
+            messages = schema.Messages(user_id=id, message=None, state=0)
             session.add(messages)
             session.commit()
             session.close()
 
     def delete_message(self, user_id):
         session = self.maker()
-        session.query(schema.Messages).filter(schema.Messages.user_id == user_id).update({"message": None})
+        session.query(schema.Messages).filter(schema.Messages.user_id == user_id).update(
+            {"message": None, "cut_message": 0})
         session.commit()
         session.close()
 
-    def add_message(self, id, text, role, username=None):
+    def add_message(self, id, text=None, role=None, username=None, cut_response=False):
+        print(f"in add_message method, user_id: {id}, role: {role}")
         messages = [
             {"role": "assistant", "content": f"{OpenAI.promt}"}
         ]
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:
-            existing_message = session.query(schema.Messages.message).filter_by(user_id=id).first()
-            print(type(existing_message))
-            print(existing_message)
-            if existing_message[0] is None:
-                print('null')
+            messages_from_db = session.query(schema.Messages).filter_by(user_id=id).first()
+            if cut_response:
+                # кейс с ошибкой - отрезаем старый ответ
+                update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values(
+                    message=messages_from_db.message[1:])
+                session.execute(update_messages)
+                session.commit()
+                response = messages_from_db.message[1:]
+                session.close()
+                return response
+            if messages_from_db.message is None:
                 messages.append({"role": role, "content": text})
-                # message = schema.Messages(user_id=user.id, message=messages)
                 update_message = update(schema.Messages).where(schema.Messages.user_id == id).values(message=messages)
                 session.execute(update_message)
                 session.commit()
                 session.close()
                 return messages
             else:
-                print('not null')
-                update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values \
-                    ({schema.Messages.message: existing_message.message + [{'role': role, 'content': text}]})
+                new_messages = messages_from_db.message + [{'role': role, 'content': text}]
+                update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values(
+                    message=new_messages)
                 session.execute(update_messages)
                 session.commit()
-                dialog = session.query(schema.Messages).filter_by(user_id=id).first()
+                # смотрим кол-во токенов
+                token_len = num_tokens_from_string(str(new_messages))
+                # если колличество токенов близко к максимальному - отрезаем 1 старый ответ
+                if token_len >= 1500:
+                    print("token_len:", token_len)
+                    update_messages = update(schema.Messages).where(schema.Messages.user_id == id).values(
+                        message=messages_from_db.message[1:])
+                    session.execute(update_messages)
+                    session.commit()
+                    new_messages = new_messages[1:]
                 session.close()
-                return dialog.message
+                return new_messages
         else:
             self.create_user(id, username)
             messages.append({"role": role, "content": text})
@@ -67,14 +84,14 @@ class DbCommands(Database):
             session.close()
             return messages
 
-    def add_type_of_relationship(self, id, is_online):
-        print(is_online)
+    def add_type_of_relationship(self, id, state):
+        print(state)
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:
             message = session.query(schema.Messages).filter_by(user_id=id).first()
             if message:
-                update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(is_online=is_online)
+                update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(state=state)
                 session.execute(update_status)
                 session.commit()
                 session.close()
@@ -87,14 +104,14 @@ class DbCommands(Database):
         session = self.maker()
         message = session.query(schema.Messages).filter_by(user_id=id).first()
         if message is None:
-            messages = schema.Messages(user_id=id, message=None, is_online=None)
+            messages = schema.Messages(user_id=id, message=None, state=0)
             session.add(messages)
             session.commit()
         session.close()
 
-    def set_message_state_to_none(self, id):
+    def set_message_state_to_default(self, id):
         session = self.maker()
-        update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(is_online=None)
+        update_status = update(schema.Messages).where(schema.Messages.user_id == id).values(state=0)
         session.execute(update_status)
         session.commit()
         session.close()
@@ -103,11 +120,52 @@ class DbCommands(Database):
         session = self.maker()
         message = session.query(schema.Messages).filter_by(user_id=id).first()
         if message:
-            return message.is_online
+            return message.state
         return None
+
+    def is_attempt_expire(self, id):
+        session = self.maker()
+        user = session.query(schema.Users).filter_by(id=id).first()
+        if user:
+            if user.premium:
+                return True
+            elif user.attempt >= 3:
+                return False
+            else:
+                attempt = user.attempt + 1
+                update_status = update(schema.Users).where(schema.Users.id == id).values(attempt=attempt)
+                session.execute(update_status)
+                session.commit()
+                session.close()
+                return True
+        # если пользователя нету, то ок
+        return True
+
+    def is_user_premium(self, id):
+        session = self.maker()
+        user = session.query(schema.Users).filter_by(id=id).first()
+        if user:
+            if user.premium:
+                return True
+        return False
+
+    def set_user_premium(self, id):
+        session = self.maker()
+        user = session.query(schema.Users).filter_by(id=id).first()
+        if user:
+            premium = update(schema.Users).where(schema.Users.id == id).values(premium=True)
+            session.execute(premium)
+            session.commit()
+            session.close()
+
+
+def num_tokens_from_string(string: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
 
 
 db = DbCommands()
 if __name__ == '__main__':
     db.create_user('1', 'loh')
-
