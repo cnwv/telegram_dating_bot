@@ -1,6 +1,6 @@
 from aiogram.types import ContentType
 
-from bot.keyboards.inline_buttons import register_initial_buttons
+from bot.keyboards.inline_buttons import register_initial_buttons, register_end_dialog_button
 from create_bot import bot, dp
 from db.commands import db
 from aiogram import Dispatcher
@@ -26,9 +26,8 @@ async def restart_command(message: types.Message, state: FSMContext):
 
 
 async def help(message: types.Message):
-    add_payment = not db.is_user_premium(message.from_user.id)
     await bot.send_message(message.from_user.id, f'{Telegram.start_text}',
-                           reply_markup=register_initial_buttons(add_payment=add_payment))
+                           reply_markup=register_initial_buttons(add_payment=False))
 
 
 @dp.callback_query_handler(text='end_dialog')
@@ -45,22 +44,24 @@ async def end_dialog(message: types.CallbackQuery):
 
 @dp.callback_query_handler(text='payment')
 async def payment(message: types.CallbackQuery):
-    if Telegram.payment_key.split(':')[1] == 'TEST':
-        await bot.send_message(message.from_user.id, text="Тестовый платеж!!!")
-    price = types.LabeledPrice(label="Подписка", amount=500 * 100)  # в копейках (1 руб == 1 * 100)
-    await bot.send_invoice(chat_id=message.from_user.id,
-                           title="Подписка на бота",
-                           description="Активация подписки на бота",
-                           provider_token=Telegram.payment_key,
-                           currency="RUB",
-                           # photo_url="https://img.freepik.com/premium-vector/online-payment-concept_118813-2685.jpg",
-                           # photo_width=605,
-                           # photo_height=626,
-                           # photo_size=15000,
-                           is_flexible=False,
-                           prices=[price],
-                           start_parameter="subscription",
-                           payload=str(message.from_user.id))
+    await bot.send_message(message.from_user.id, f'Пока здесь ничего нет... Приходите позже',
+                           reply_markup=register_end_dialog_button(add_payment=False))
+    # if Telegram.payment_key.split(':')[1] == 'TEST':
+    #     await bot.send_message(message.from_user.id, text="Тестовый платеж!!!")
+    # price = types.LabeledPrice(label="Подписка", amount=500 * 100)  # в копейках (1 руб == 1 * 100)
+    # await bot.send_invoice(chat_id=message.from_user.id,
+    #                        title="Подписка на бота",
+    #                        description="Активация подписки на бота",
+    #                        provider_token=Telegram.payment_key,
+    #                        currency="RUB",
+    #                        # photo_url="https://img.freepik.com/premium-vector/online-payment-concept_118813-2685.jpg",
+    #                        # photo_width=605,
+    #                        # photo_height=626,
+    #                        # photo_size=15000,
+    #                        is_flexible=False,
+    #                        prices=[price],
+    #                        start_parameter="subscription",
+    #                        payload=str(message.from_user.id))
 
 
 # pre checkout (must be answered in 10 seconds)
