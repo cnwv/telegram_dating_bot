@@ -28,7 +28,7 @@ class DbCommands(Database):
     def delete_message(self, user_id):
         session = self.maker()
         session.query(schema.Messages).filter(schema.Messages.user_id == user_id).update(
-            {"message": None, "cut_message": 0})
+            {"message": None})
         session.commit()
         session.close()
 
