@@ -52,7 +52,7 @@ async def another_choice_handler(message: types.CallbackQuery):
     response = await requests_gpt(id=message.from_user.id, another_choice=True, text="Сгенерируй другой вариант.")
     await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
     await message.bot.send_message(chat_id=message.from_user.id, text=response,
-                                   reply_markup=register_end_dialog_button(add_payment=False))
+                                   reply_markup=register_end_dialog_button())
 
 
 def register_handlers_callbacks(dpt: Dispatcher):
