@@ -7,3 +7,4 @@ utils/convert_ffmeg.py
 utils/convert_pydub.py
 utils/vosk-model-small-ru-0.4
 .idea
+.database

@@ -13,8 +13,7 @@ async def process_message(message: types.Message):
                                      sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
     response = await requests_gpt(message.text, message.from_user.id, message.from_user.username)
     await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
-    await message.answer(response,
-                         reply_markup=register_end_dialog_button(add_payment=False))
+    await message.answer(response, reply_markup=register_end_dialog_button())
 
 
 async def process_voice_message(message: types.Message):

@@ -11,41 +11,38 @@ from aiogram.dispatcher import FSMContext
 
 @dp.message_handler(commands=['start'])
 async def create_user(message: types.Message):
-    add_payment = not db.is_user_premium(message.from_user.id)
     db.create_user(message.from_user.id, message.from_user.username)
-    await message.answer(f'{Telegram.start_text}', reply_markup=register_initial_buttons(add_payment=add_payment))
+    await message.answer(f'{Telegram.start_text}', reply_markup=register_initial_buttons())
 
 
 @dp.message_handler(commands=['restart'])
 async def restart_command(message: types.Message, state: FSMContext):
-    add_payment = not db.is_user_premium(message.from_user.id)
     db.delete_message(message.from_user.id)
     await state.finish()
     await message.answer("Бот перезагружен. Вы можете начать заново. Нажмите /start, чтобы начать новое знакомство",
-                         reply_markup=register_initial_buttons(add_payment=add_payment))
+                         reply_markup=register_initial_buttons())
 
 
 async def help(message: types.Message):
     await bot.send_message(message.from_user.id, f'{Telegram.start_text}',
-                           reply_markup=register_initial_buttons(add_payment=False))
+                           reply_markup=register_initial_buttons())
 
 
 @dp.callback_query_handler(text='end_dialog')
 async def end_dialog(message: types.CallbackQuery):
-    add_payment = not db.is_user_premium(message.from_user.id)
     db.delete_message(message.from_user.id)
     await bot.send_message(message.from_user.id,
                            'Хорошо, если у тебя больше нет вопросов или нужды в моей помощи, я закончу этот чат. '
                            'Если в будущем у тебя возникнут вопросы или нужна будет поддержка, не стесняйся обратиться. '
                            'Удачи в поиске любви и во всех твоих усилиях на пути к ней! Прощай!',
-                           reply_markup=register_initial_buttons(add_payment=add_payment))
+                           reply_markup=register_initial_buttons())
     await message.answer('Выбери знакомство')
 
 
-@dp.callback_query_handler(text='payment')
+@dp.message_handler(commands=['payment'])
 async def payment(message: types.CallbackQuery):
     await bot.send_message(message.from_user.id, f'Пока здесь ничего нет... Приходите позже',
-                           reply_markup=register_end_dialog_button(add_payment=False))
+                           reply_markup=register_end_dialog_button(payment=True))
     # if Telegram.payment_key.split(':')[1] == 'TEST':
     #     await bot.send_message(message.from_user.id, text="Тестовый платеж!!!")
     # price = types.LabeledPrice(label="Подписка", amount=500 * 100)  # в копейках (1 руб == 1 * 100)
@@ -54,7 +51,7 @@ async def payment(message: types.CallbackQuery):
     #                        description="Активация подписки на бота",
     #                        provider_token=Telegram.payment_key,
     #                        currency="RUB",
-    #                        # photo_url="https://img.freepik.com/premium-vector/online-payment-concept_118813-2685.jpg",
+    #                       # photo_url="https://img.freepik.com/premium-vector/online-payment-concept_118813-2685.jpg",
     #                        # photo_width=605,
     #                        # photo_height=626,
     #                        # photo_size=15000,
