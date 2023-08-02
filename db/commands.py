@@ -121,7 +121,7 @@ class DbCommands(Database):
         message = session.query(schema.Messages).filter_by(user_id=id).first()
         if message:
             return message.state
-        return None
+        return 0
 
     def is_attempt_expire(self, id):
         session = self.maker()
