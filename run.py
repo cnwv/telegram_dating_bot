@@ -35,8 +35,9 @@ async def handle_bot_webhook(request):
 
 async def handle_result_url(request):
     print('handle_result_url')
-    req = request.json()
+    req = await request.json()
     print(req)
+    print(**req)
     inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", **req)
     print(inv_id)
     return web.Response()
