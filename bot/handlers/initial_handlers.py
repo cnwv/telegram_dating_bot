@@ -100,7 +100,7 @@ async def subscribe_handler(message: types.CallbackQuery):
     password = Robokassa.password_1 if not Telegram.debug else Robokassa.test_password_1
     payment_link = generate_payment_link(merchant_login="heartbot",
                                          merchant_password_1=password,
-                                         cost=cost,
+                                         cost=1,
                                          number=message.from_user.id,
                                          description=f"Подписка на бота",
                                          is_test=Telegram.debug)
