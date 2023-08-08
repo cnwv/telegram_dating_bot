@@ -17,44 +17,50 @@ async def set_webhook():
     await bot.set_webhook(webhook_url)
 
 
+def parse_url(req):
+    url = str(req.url)
+    index = url.rfind('/')
+    return url[index + 1:]
+
+
 async def handle_bot_webhook(request):
     print('handle_bot_webhook')
-
-    url = str(request.url)
-    index = url.rfind('/')
-    token = url[index + 1:]
-
+    token = parse_url(request)
     if token == Telegram.api_key:
         request_data = await request.json()
-        print("request data", request_data)
+        print(f"[request data: {request_data}]")
         update = types.Update(**request_data)
         await dp.process_update(update)
         return web.Response()
     else:
+        print("wrong path/token")
         return web.Response(status=403)
 
 
 async def handle_result_url(request):
     print('handle_result_url')
-    req = await request.json()
-    print("request data:", req)
-    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", str(req))
+    print(request.method)
+    path = parse_url(request)
+    print(f"[request url data: {path}]")
+    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", str(path))
     print(inv_id)
     return web.Response()
 
 
 async def handle_success_url(request):
     print('handle_success_url')
-    req = await request.json()
-    print("request data:", req)
-    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", str(req))
+    print(request.method)
+    path = parse_url(request)
+    print(f"[request url data: {path}]")
+    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", str(path))
     print(st)
     return web.Response()
 
 
 app.router.add_post(f'/{Telegram.api_key}', handle_bot_webhook)
 app.router.add_post(f'/result_url', handle_result_url)
-app.router.add_post(f'/success_url', handle_success_url)
+app.router.add_get(f'/result_url', handle_result_url)
+app.router.add_get(f'/success_url', handle_success_url)
 
 
 async def on_startup(_):
