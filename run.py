@@ -58,8 +58,10 @@ async def handle_success_url(request):
 
 
 app.router.add_post(f'/{Telegram.api_key}', handle_bot_webhook)
+
 app.router.add_post(f'/result_url', handle_result_url)
 app.router.add_get(f'/result_url', handle_result_url)
+app.router.add_post(f'/success_url', handle_success_url)
 app.router.add_get(f'/success_url', handle_success_url)
 
 
