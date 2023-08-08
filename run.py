@@ -13,7 +13,7 @@ from db.commands import db
 
 
 async def set_webhook():
-    url_prefix = Web.main_url if not Telegram.debug else Web.ngrok_url
+    url_prefix = Web.main_url  # Web.ngrok_url
     webhook_url = f'{url_prefix}/{Telegram.api_key}'
     await bot.set_webhook(webhook_url)
 
