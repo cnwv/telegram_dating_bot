@@ -18,7 +18,6 @@ async def set_webhook():
     #     url_prefix = Ngrok.url
     # else:
     #     url_prefix = "telegram-dating-bot.ru"
-
     url_prefix = "telegram-dating-bot.ru"
     webhook_url = f'{url_prefix}/{Telegram.api_key}'
     await bot.set_webhook(webhook_url)
@@ -30,7 +29,7 @@ def parse_url(req):
     return url[index + 1:]
 
 
-async def handle_bot_webhook(request):
+async def handler_bot_webhook(request):
     print('handle_bot_webhook')
     token = parse_url(request)
     if token == Telegram.api_key:
@@ -44,22 +43,23 @@ async def handle_bot_webhook(request):
         return web.Response(status=403)
 
 
-async def handle_result_url(request):
+async def handler_result_url(request):
     print('handle_result_url')
     path = parse_url(request)
+    print(f"[request url path: {path}]")
     if Telegram.debug:
         print("test password used")
         password = Robokassa.test_password_2
     else:
         password = Robokassa.password_2
     response = result_payment(merchant_password_2=password, request=str(path))
-    print(response)
-    return web.Response(text=response)
+    return web.Response(body=response, status=200)
 
 
-async def handle_success_url(request):
+async def handler_success_url(request):
     print('handle_success_url')
     path = parse_url(request)
+    print(f"[request url path: {path}]")
     if Telegram.debug:
         print("test password used")
         password = Robokassa.test_password_1
@@ -73,10 +73,10 @@ async def handle_success_url(request):
     return web.Response()
 
 
-app.router.add_post(f'/{Telegram.api_key}', handle_bot_webhook)
+app.router.add_post(f'/{Telegram.api_key}', handler_bot_webhook)
 
-app.router.add_get(f'/result_url', handle_result_url)
-app.router.add_post(f'/success_url', handle_success_url)
+app.router.add_get(f'/result_url', handler_result_url)
+app.router.add_post(f'/success_url', handler_success_url)
 
 
 async def start_worker():
