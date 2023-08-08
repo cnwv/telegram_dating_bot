@@ -25,8 +25,9 @@ class OpenAI:
     promt = getenv('PROMT_GPT')
 
 
-class Ngrok:
-    url = getenv('NGROK_URL')
+class Web:
+    ngrok_url = getenv('NGROK_URL')
+    main_url = getenv('MAIN_URL')
 
 
 class Robokassa:

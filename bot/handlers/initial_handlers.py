@@ -73,16 +73,16 @@ SUBSCRIBE_TEXT = 'Нажимая кнопку ниже я даю согласи�
 
 
 # Блок подписки
-@dp.callback_query_handler(text='subscribe')
+@dp.callback_query_handler(text='pay')
 async def choose_subscribe_handler(message: types.CallbackQuery):
     await message.message.answer(
         SUBSCRIBE_TEXT, parse_mode="html",
         reply_markup=register_subscribe_button()
     )
-    print('Нажата кнопка - subscribe')
+    print('Нажата кнопка - pay')
 
 
-# Блок first_sub
+# Блок subscribe_handler
 @dp.callback_query_handler(lambda c: c.data.startswith('subscription:'))
 async def subscribe_handler(message: types.CallbackQuery):
     callback_data = message.data
@@ -96,7 +96,7 @@ async def subscribe_handler(message: types.CallbackQuery):
         cost = 1999
     else:
         await bot.send_message(message.from_user.id,
-                               text="wrong data")
+                               text="bad data")
     password = Robokassa.password_1 if not Telegram.debug else Robokassa.test_password_1
     payment_link = generate_payment_link(merchant_login="heartbot",
                                          merchant_password_1=password,
@@ -113,5 +113,5 @@ def register_handlers_callbacks(dpt: Dispatcher):
     dpt.register_callback_query_handler(online_state_handler, text='online')
     dpt.register_callback_query_handler(relationship_state_handler, text='relationship')
     dpt.register_callback_query_handler(another_choice_handler, text='another_choice')
-    dpt.register_callback_query_handler(choose_subscribe_handler, text='subscribe')
+    dpt.register_callback_query_handler(choose_subscribe_handler, text='pay')
     dpt.register_callback_query_handler(subscribe_handler)

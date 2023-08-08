@@ -6,19 +6,14 @@ from bot.handlers import commands, initial_handlers, messages
 from bot.keyboards import register_end_dialog_button
 from bot.robokassa import result_payment, check_success_payment
 from create_bot import dp, app, bot
-from config import Telegram, Ngrok, Robokassa
+from config import Telegram, Web, Robokassa
 from aiohttp import web
 
 from db.commands import db
 
 
 async def set_webhook():
-    # debug = Telegram.debug
-    # if debug:
-    #     url_prefix = Ngrok.url
-    # else:
-    #     url_prefix = "telegram-dating-bot.ru"
-    url_prefix = "telegram-dating-bot.ru"
+    url_prefix = Web.main_url if not Telegram.debug else Web.ngrok_url
     webhook_url = f'{url_prefix}/{Telegram.api_key}'
     await bot.set_webhook(webhook_url)
 
@@ -47,12 +42,7 @@ async def handler_result_url(request):
     print('handler_result_url')
     path = parse_url(request)
     print(f"[request url path: {path}]")
-    if Telegram.debug:
-        print("test password used in handler_result_url")
-        password = Robokassa.test_password_2
-    else:
-        print("prod password used in handler_result_url")
-        password = Robokassa.password_2
+    password = Robokassa.password_2 if not Telegram.debug else Robokassa.test_password_2
     response = result_payment(merchant_password_2=password, request=str(path))
     print("response:", response)
     return web.Response(text=response, status=200)
@@ -62,12 +52,7 @@ async def handler_success_url(request):
     print('handler_success_url')
     path = parse_url(request)
     print(f"[request url path: {path}]")
-    if Telegram.debug:
-        print("test password used in handler_success_url")
-        password = Robokassa.test_password_1
-    else:
-        print("prod password used in handler_success_url")
-        password = Robokassa.password_1
+    password = Robokassa.password_1 if not Telegram.debug else Robokassa.test_password_1
     response, user_id, subscribe_expire_day = check_success_payment(merchant_password_1=password, request=str(path))
     response += f" Ваша подписка активна до: {str(subscribe_expire_day)}" if subscribe_expire_day is not None else ""
     await dp.bot.send_message(chat_id=user_id,
