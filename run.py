@@ -1,17 +1,28 @@
+import logging
+
 from aiogram import types
-from create_bot import dp, app, webhook_path, bot
+
+from bot.handlers import commands, initial_handlers, messages
+from bot.robokassa import result_payment, check_success_payment
+from create_bot import dp, app, bot
 from config import Telegram, Ngrok
 from aiohttp import web
 
 
 async def set_webhook():
-    webhook_uri = f'{Ngrok.url}{webhook_path}'
-    await bot.set_webhook(
-        webhook_uri
-    )
+    debug = Telegram.debug
+    if debug:
+        url_prefix = Ngrok.url
+    else:
+        url_prefix = "telegram-dating-bot.ru"
+    webhook_url = f'{url_prefix}/{Telegram.api_key}'
+    await bot.set_webhook(webhook_url)
 
 
-async def handle_webhook(request):
+async def handle_bot_webhook(request):
+    print('handle_bot_webhook')
+    logging.info("handle_bot_webhook")
+
     url = str(request.url)
     index = url.rfind('/')
     token = url[index + 1:]
@@ -25,15 +36,34 @@ async def handle_webhook(request):
         return web.Response(status=403)
 
 
-app.router.add_post(f'/{Telegram.api_key}', handle_webhook)
+async def handle_result_url(request):
+    print('handle_result_url')
+    logging.info("handle_result_url")
+    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", request)
+    print(inv_id)
+    logging.info(inv_id)
+    return web.Response()
+
+
+async def handle_success_url(request):
+    print('handle_success_url')
+    logging.info("handle_success_url")
+    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", request)
+    print(st)
+    logging.info(st)
+    return web.Response()
+
+
+app.router.add_post(f'/{Telegram.api_key}', handle_bot_webhook)
+app.router.add_post(f'/result_url', handle_result_url)
+app.router.add_post(f'/success_url', handle_success_url)
 
 
 async def on_startup(_):
     await set_webhook()
     print('The bot is up and running.')
+    logging.info("The bot is up and running.")
 
-
-from bot.handlers import commands, initial_handlers, messages
 
 commands.register_handlers_commands(dp)
 initial_handlers.register_handlers_callbacks(dp)

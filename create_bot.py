@@ -8,4 +8,3 @@ Bot.set_current(bot)
 app = web.Application()
 dp = Dispatcher(bot)
 dp.middleware.setup(LoggingMiddleware())
-webhook_path = f'/{Telegram.api_key}'

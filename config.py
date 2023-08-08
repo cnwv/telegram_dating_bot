@@ -14,6 +14,7 @@ class DB:
 
 
 class Telegram:
+    debug = int(getenv('DEBUG'))
     api_key = getenv('BOT_TOKEN')
     payment_key = getenv('PAYMENTS_TOKEN')
     start_text = getenv('START_TEXT')
