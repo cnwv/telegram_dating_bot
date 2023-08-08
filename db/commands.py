@@ -170,7 +170,7 @@ class DbCommands(Database):
         days_by_cost = {
             "149.00": 7,
             "399.00": 30,
-            "1099.00": 365
+            "1999.00": 365
         }
         days = days_by_cost[cost]
         subscribe_expire_day = datetime.now() + timedelta(days=days)
