@@ -30,7 +30,7 @@ def parse_url(req):
 
 
 async def handler_bot_webhook(request):
-    print('handle_bot_webhook')
+    print('handler_bot_webhook')
     token = parse_url(request)
     if token == Telegram.api_key:
         request_data = await request.json()
@@ -44,26 +44,29 @@ async def handler_bot_webhook(request):
 
 
 async def handler_result_url(request):
-    print('handle_result_url')
+    print('handler_result_url')
     path = parse_url(request)
     print(f"[request url path: {path}]")
     if Telegram.debug:
-        print("test password used")
+        print("test password used in handler_result_url")
         password = Robokassa.test_password_2
     else:
+        print("prod password used in handler_result_url")
         password = Robokassa.password_2
     response = result_payment(merchant_password_2=password, request=str(path))
-    return web.Response(body=response, status=200)
+    print("response:", response)
+    return web.Response(text=response, status=200)
 
 
 async def handler_success_url(request):
-    print('handle_success_url')
+    print('handler_success_url')
     path = parse_url(request)
     print(f"[request url path: {path}]")
     if Telegram.debug:
-        print("test password used")
+        print("test password used in handler_success_url")
         password = Robokassa.test_password_1
     else:
+        print("prod password used in handler_success_url")
         password = Robokassa.password_1
     response, user_id, subscribe_expire_day = check_success_payment(merchant_password_1=password, request=str(path))
     response += f" Ваша подписка активна до: {str(subscribe_expire_day)}" if subscribe_expire_day is not None else ""
