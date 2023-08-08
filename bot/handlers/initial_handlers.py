@@ -73,13 +73,13 @@ SUBSCRIBE_TEXT = 'Нажимая кнопку ниже я даю согласи�
 
 
 # Блок подписки
-@dp.callback_query_handler(text='pay')
+@dp.callback_query_handler(text='subscribe')
 async def choose_subscribe_handler(message: types.CallbackQuery):
     await message.message.answer(
         SUBSCRIBE_TEXT, parse_mode="html",
         reply_markup=register_subscribe_button()
     )
-    print('Нажата кнопка - pay')
+    print('Нажата кнопка - subscribe')
 
 
 # Блок subscribe_handler
@@ -113,5 +113,5 @@ def register_handlers_callbacks(dpt: Dispatcher):
     dpt.register_callback_query_handler(online_state_handler, text='online')
     dpt.register_callback_query_handler(relationship_state_handler, text='relationship')
     dpt.register_callback_query_handler(another_choice_handler, text='another_choice')
-    dpt.register_callback_query_handler(choose_subscribe_handler, text='pay')
+    dpt.register_callback_query_handler(choose_subscribe_handler, text='subscribe')
     dpt.register_callback_query_handler(subscribe_handler)
