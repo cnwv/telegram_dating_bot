@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import types
 
 from bot.handlers import commands, initial_handlers, messages
@@ -21,7 +19,6 @@ async def set_webhook():
 
 async def handle_bot_webhook(request):
     print('handle_bot_webhook')
-    logging.info("handle_bot_webhook")
 
     url = str(request.url)
     index = url.rfind('/')
@@ -38,19 +35,17 @@ async def handle_bot_webhook(request):
 
 async def handle_result_url(request):
     print('handle_result_url')
-    logging.info("handle_result_url")
-    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", request)
+    req = request.json()
+    print(req)
+    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", **req)
     print(inv_id)
-    logging.info(inv_id)
     return web.Response()
 
 
 async def handle_success_url(request):
     print('handle_success_url')
-    logging.info("handle_success_url")
     st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", request)
     print(st)
-    logging.info(st)
     return web.Response()
 
 
@@ -62,7 +57,6 @@ app.router.add_post(f'/success_url', handle_success_url)
 async def on_startup(_):
     await set_webhook()
     print('The bot is up and running.')
-    logging.info("The bot is up and running.")
 
 
 commands.register_handlers_commands(dp)
