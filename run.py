@@ -54,7 +54,7 @@ async def handle_result_url(request):
         password = Robokassa.password_2
     response = result_payment(merchant_password_2=password, request=str(path))
     print(response)
-    return web.Response(text=response)
+    return web.Response(body={"InvId": response})
 
 
 async def handle_success_url(request):
