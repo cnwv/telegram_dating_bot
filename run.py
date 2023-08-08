@@ -54,11 +54,11 @@ async def handler_success_url(request):
     print(f"[request url path: {path}]")
     password = Robokassa.password_1 if not Telegram.debug else Robokassa.test_password_1
     response, user_id, subscribe_expire_day = check_success_payment(merchant_password_1=password, request=str(path))
-    response += f" Ваша подписка активна до: {str(subscribe_expire_day)}" if subscribe_expire_day is not None else ""
+    response += f" Ваша подписка активна до: {str(subscribe_expire_day)[:-10]}" \
+        if subscribe_expire_day is not None else ""
     await dp.bot.send_message(chat_id=user_id,
                               text=response,
                               reply_markup=register_end_dialog_button(dialog=False))
-    return web.Response()
 
 
 app.router.add_post(f'/{Telegram.api_key}', handler_bot_webhook)
@@ -69,9 +69,9 @@ app.router.add_get(f'/success_url', handler_success_url)
 
 async def start_worker():
     while True:
-        # проверяем каждый час что премиум не закончился
+        # проверяем каждый пол часа что премиум не закончился
         db.check_premium_expire_for_all_users()
-        await asyncio.sleep(3600)
+        await asyncio.sleep(1800)
 
 
 async def on_startup(_):

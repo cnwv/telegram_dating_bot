@@ -173,7 +173,7 @@ class DbCommands(Database):
             "1999.00": 365
         }
         days = days_by_cost[cost]
-        subscribe_expire_day = datetime.now() + timedelta(days=days)
+        subscribe_expire_day = datetime.utcnow() + timedelta(days=days, hours=1)
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:
