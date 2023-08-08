@@ -1,4 +1,3 @@
-import tiktoken
 import openai
 from config import OpenAI, Telegram
 import asyncio
@@ -20,9 +19,8 @@ ERROR_TEXT = "Ошибка при выполненнии запроса. Пож�
 
 
 async def requests_gpt(text, id, username=None, another_choice=False):
-    # TODO: вернуть вместе с оплатой
-    # if not db.is_attempt_expire(id):
-    #     return Telegram.expire_text
+    if not db.is_attempt_expire(id) or db.is_premium_expire(id):
+        return Telegram.expire_text
     api_key = apy_key_list.pop(0)
     openai.api_key = api_key
     apy_key_list.append(api_key)

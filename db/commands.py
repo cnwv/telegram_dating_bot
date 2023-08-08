@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import tiktoken
 
 from db.engine import Database
@@ -141,6 +143,21 @@ class DbCommands(Database):
         # если пользователя нету, то ок
         return True
 
+    def check_premium_expire_for_all_users(self):
+        session = self.maker()
+        users = session.query(schema.Users).all()
+        for user in users:
+            if user.premium:
+                current_time = datetime.now()
+                day_expire = user.subscribe_expire_day
+                if current_time > day_expire:
+                    update_premium = update(schema.Users).where(schema.Users.id == user.id).values(
+                        premium=False,
+                        subscribe_expire_day=None)
+                    session.execute(update_premium)
+                    session.commit()
+                    session.close()
+
     def is_user_premium(self, id):
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
@@ -149,14 +166,24 @@ class DbCommands(Database):
                 return True
         return False
 
-    def set_user_premium(self, id):
+    def set_user_premium(self, id, cost):
+        days_by_cost = {
+            "149.00": 7,
+            "399.00": 30,
+            "1099.00": 365
+        }
+        days = days_by_cost[cost]
+        subscribe_expire_day = datetime.now() + timedelta(days=days)
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:
-            premium = update(schema.Users).where(schema.Users.id == id).values(premium=True)
+            premium = update(schema.Users).where(schema.Users.id == id).values(
+                premium=True,
+                subscribe_expire_day=subscribe_expire_day)
             session.execute(premium)
             session.commit()
             session.close()
+            return subscribe_expire_day
 
 
 def num_tokens_from_string(string: str) -> int:

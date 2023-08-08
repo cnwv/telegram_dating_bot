@@ -1,6 +1,7 @@
 from bot.keyboards import register_end_dialog_button
 from bot.keyboards.inline_buttons import register_subscribe_button
 from bot.robokassa import generate_payment_link
+from config import Robokassa, Telegram
 from create_bot import dp, bot
 from aiogram import types, Dispatcher
 from db.commands import db
@@ -96,12 +97,13 @@ async def subscribe_handler(message: types.CallbackQuery):
     else:
         await bot.send_message(message.from_user.id,
                                text="wrong data")
+    password = Robokassa.password_1 if not Telegram.debug else Robokassa.test_password_1
     payment_link = generate_payment_link(merchant_login="heartbot",
-                                         merchant_password_1="ZgOuH6WvrB3G7p2nRl8a",
+                                         merchant_password_1=password,
                                          cost=cost,
                                          number=message.from_user.id,
-                                         description=f"Подписка {message.from_user.id}",
-                                         is_test=1)
+                                         description=f"Подписка на бота",
+                                         is_test=Telegram.debug)
     await bot.send_message(message.from_user.id,
                            text=payment_link)
 

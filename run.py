@@ -1,10 +1,15 @@
+import asyncio
+
 from aiogram import types
 
 from bot.handlers import commands, initial_handlers, messages
+from bot.keyboards import register_end_dialog_button
 from bot.robokassa import result_payment, check_success_payment
 from create_bot import dp, app, bot
-from config import Telegram, Ngrok
+from config import Telegram, Ngrok, Robokassa
 from aiohttp import web
+
+from db.commands import db
 
 
 async def set_webhook():
@@ -39,34 +44,46 @@ async def handle_bot_webhook(request):
 
 async def handle_result_url(request):
     print('handle_result_url')
-    print(request.method)
     path = parse_url(request)
-    print(f"[request url data: {path}]")
-    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", str(path))
-    print(inv_id)
-    return web.Response()
+    if Telegram.debug:
+        password = Robokassa.test_password_2
+    else:
+        password = Robokassa.password_2
+    response = result_payment(merchant_password_2=password, request=str(path))
+    return web.Response(text=response)
 
 
 async def handle_success_url(request):
     print('handle_success_url')
-    print(request.method)
     path = parse_url(request)
-    print(f"[request url data: {path}]")
-    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", str(path))
-    print(st)
+    if Telegram.debug:
+        password = Robokassa.test_password_1
+    else:
+        password = Robokassa.password_1
+    response, user_id, subscribe_expire_day = check_success_payment(merchant_password_1=password, request=str(path))
+    response += f" Ваша подписка активна до: {str(subscribe_expire_day)}" if subscribe_expire_day is not None else ""
+    await dp.bot.send_message(chat_id=user_id,
+                              text=response,
+                              reply_markup=register_end_dialog_button(dialog=False))
     return web.Response()
 
 
 app.router.add_post(f'/{Telegram.api_key}', handle_bot_webhook)
 
-app.router.add_post(f'/result_url', handle_result_url)
 app.router.add_get(f'/result_url', handle_result_url)
 app.router.add_post(f'/success_url', handle_success_url)
-app.router.add_get(f'/success_url', handle_success_url)
+
+
+async def start_worker():
+    while True:
+        # проверяем каждый час что премиум не закончился
+        db.check_premium_expire_for_all_users()
+        await asyncio.sleep(3600)
 
 
 async def on_startup(_):
     await set_webhook()
+    asyncio.create_task(start_worker())
     print('The bot is up and running.')
 
 

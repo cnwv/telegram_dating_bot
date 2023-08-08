@@ -1,6 +1,6 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import Column, BigInteger, String, Boolean, ForeignKey, SmallInteger, Integer
+from sqlalchemy import Column, BigInteger, String, Boolean, ForeignKey, SmallInteger, DateTime
 
 Base = declarative_base()
 
@@ -11,6 +11,7 @@ class Users(Base):
     nickname = Column(String, nullable=True)
     premium = Column(Boolean, default=False)
     attempt = Column(SmallInteger, default=0)
+    subscribe_expire_day = Column(DateTime, nullable=True, default=None)
 
 
 class Messages(Base):

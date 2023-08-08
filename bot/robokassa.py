@@ -3,6 +3,8 @@ import hashlib
 from urllib import parse
 from urllib.parse import urlparse
 
+from db.commands import db
+
 
 def calculate_signature(*args) -> str:
     """Create signature MD5.
@@ -84,7 +86,7 @@ def result_payment(merchant_password_2: str, request: str) -> str:
 
 # Проверка параметров в скрипте завершения операции (SuccessURL).
 
-def check_success_payment(merchant_password_1: str, request: str) -> str:
+def check_success_payment(merchant_password_1: str, request: str) -> [str, int]:
     """ Verification of operation parameters ("cashier check") in SuccessURL script.
     :param request: HTTP parameters
     """
@@ -94,5 +96,6 @@ def check_success_payment(merchant_password_1: str, request: str) -> str:
     signature = param_request['SignatureValue']
 
     if check_signature_result(number, cost, signature, merchant_password_1):
-        return "Thank you for using our service"
-    return "bad sign"
+        subscribe_expire_day = db.set_user_premium(id=number, cost=cost)
+        return "Оплата прошла успешно!", number, subscribe_expire_day
+    return "Ошибка при выполнении оплаты.", number, None

@@ -16,7 +16,6 @@ class DB:
 class Telegram:
     debug = int(getenv('DEBUG'))
     api_key = getenv('BOT_TOKEN')
-    payment_key = getenv('PAYMENTS_TOKEN')
     start_text = getenv('START_TEXT')
     expire_text = getenv('EXPIRE_TEXT')
 
@@ -28,3 +27,10 @@ class OpenAI:
 
 class Ngrok:
     url = getenv('NGROK_URL')
+
+
+class Robokassa:
+    password_1 = getenv('PASSWORD_1')
+    password_2 = getenv('PASSWORD_2')
+    test_password_1 = getenv('TEST_PASSWORD_1')
+    test_password_2 = getenv('TEST_PASSWORD_2')
