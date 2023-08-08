@@ -13,11 +13,13 @@ from db.commands import db
 
 
 async def set_webhook():
-    debug = Telegram.debug
-    if debug:
-        url_prefix = Ngrok.url
-    else:
-        url_prefix = "telegram-dating-bot.ru"
+    # debug = Telegram.debug
+    # if debug:
+    #     url_prefix = Ngrok.url
+    # else:
+    #     url_prefix = "telegram-dating-bot.ru"
+
+    url_prefix = "telegram-dating-bot.ru"
     webhook_url = f'{url_prefix}/{Telegram.api_key}'
     await bot.set_webhook(webhook_url)
 
@@ -46,10 +48,12 @@ async def handle_result_url(request):
     print('handle_result_url')
     path = parse_url(request)
     if Telegram.debug:
+        print("test password used")
         password = Robokassa.test_password_2
     else:
         password = Robokassa.password_2
     response = result_payment(merchant_password_2=password, request=str(path))
+    print(response)
     return web.Response(text=response)
 
 
@@ -57,6 +61,7 @@ async def handle_success_url(request):
     print('handle_success_url')
     path = parse_url(request)
     if Telegram.debug:
+        print("test password used")
         password = Robokassa.test_password_1
     else:
         password = Robokassa.password_1

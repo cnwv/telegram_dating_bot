@@ -131,7 +131,7 @@ class DbCommands(Database):
         if user:
             if user.premium:
                 return True
-            elif user.attempt >= 3:
+            elif user.attempt >= 5:
                 return False
             else:
                 attempt = user.attempt + 1
