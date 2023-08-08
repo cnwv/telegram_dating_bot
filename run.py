@@ -26,6 +26,7 @@ async def handle_bot_webhook(request):
 
     if token == Telegram.api_key:
         request_data = await request.json()
+        print("request data", request_data)
         update = types.Update(**request_data)
         await dp.process_update(update)
         return web.Response()
@@ -36,16 +37,17 @@ async def handle_bot_webhook(request):
 async def handle_result_url(request):
     print('handle_result_url')
     req = await request.json()
-    print(req)
-    print(**req)
-    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", **req)
+    print("request data:", req)
+    inv_id = result_payment("M92pU2DfcAl5hlyXo3WY", str(req))
     print(inv_id)
     return web.Response()
 
 
 async def handle_success_url(request):
     print('handle_success_url')
-    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", request)
+    req = await request.json()
+    print("request data:", req)
+    st = check_success_payment("ZgOuH6WvrB3G7p2nRl8a", str(req))
     print(st)
     return web.Response()
 
