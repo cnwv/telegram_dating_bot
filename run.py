@@ -59,6 +59,7 @@ async def handler_success_url(request):
     await dp.bot.send_message(chat_id=user_id,
                               text=response,
                               reply_markup=register_end_dialog_button(dialog=False))
+    return web.Response(status=204)
 
 
 app.router.add_post(f'/{Telegram.api_key}', handler_bot_webhook)
