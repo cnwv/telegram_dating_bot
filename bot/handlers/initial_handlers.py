@@ -1,5 +1,5 @@
 from bot.keyboards import register_end_dialog_button
-from bot.keyboards.inline_buttons import register_subscribe_button
+from bot.keyboards.inline_buttons import register_subscribe_button, register_payment_button
 from bot.robokassa import generate_payment_link
 from config import Robokassa, Telegram
 from create_bot import dp, bot
@@ -76,7 +76,7 @@ SUBSCRIBE_TEXT = 'Нажимая кнопку ниже я даю согласи�
 @dp.callback_query_handler(text='subscribe')
 async def choose_subscribe_handler(message: types.CallbackQuery):
     await message.message.answer(
-        SUBSCRIBE_TEXT, parse_mode="html",
+        "Выберите опцию подписки:", parse_mode="html",
         reply_markup=register_subscribe_button()
     )
     print('Нажата кнопка - subscribe')
@@ -105,7 +105,8 @@ async def subscribe_handler(message: types.CallbackQuery):
                                          description=f"Подписка на бота",
                                          is_test=Telegram.debug)
     await bot.send_message(message.from_user.id,
-                           text=payment_link)
+                           text=SUBSCRIBE_TEXT, parse_mode="html",
+                           reply_markup=register_payment_button(link=payment_link))
 
 
 def register_handlers_callbacks(dpt: Dispatcher):

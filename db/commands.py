@@ -148,7 +148,7 @@ class DbCommands(Database):
         users = session.query(schema.Users).all()
         for user in users:
             if user.premium:
-                current_time = datetime.now()
+                current_time = datetime.now() + timedelta(hours=3)
                 day_expire = user.subscribe_expire_day
                 if current_time > day_expire:
                     update_premium = update(schema.Users).where(schema.Users.id == user.id).values(

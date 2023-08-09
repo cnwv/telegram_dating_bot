@@ -43,7 +43,7 @@ async def end_dialog(message: types.CallbackQuery):
 @dp.message_handler(commands=['pay'])
 async def payment(message: types.CallbackQuery):
     await message.bot.send_message(message.from_user.id,
-                                   text=SUBSCRIBE_TEXT, parse_mode="html",
+                                   text="Выберите опцию подписки:", parse_mode="html",
                                    reply_markup=register_subscribe_button())
 
 

@@ -25,7 +25,14 @@ def register_initial_buttons(subscribe=False):
 
 def register_subscribe_button():
     inline_keyboard = InlineKeyboardMarkup()
-    inline_keyboard.add(InlineKeyboardButton(text='День — 149₽',  callback_data='subscription:day'))
+    inline_keyboard.add(InlineKeyboardButton(text='День — 149₽', callback_data='subscription:day'))
     inline_keyboard.add(InlineKeyboardButton(text='Месяц — 399₽', callback_data='subscription:month'))
     inline_keyboard.add(InlineKeyboardButton(text='Год — 1999₽', callback_data='subscription:year'))
+    return inline_keyboard
+
+
+def register_payment_button(link):
+    inline_keyboard = InlineKeyboardMarkup()
+    inline_keyboard.add(InlineKeyboardButton(text='Оплата через Robokassa', url=link))
+    inline_keyboard.add(InlineKeyboardButton(text='Главное меню', callback_data='end_dialog'))
     return inline_keyboard
