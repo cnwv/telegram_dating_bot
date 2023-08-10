@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
-      - /home/admin/docker-logs:/var/log/myapp
     depends_on:
       - db
     restart: always
@@ -14,11 +13,6 @@ services:
       - "8080:8080"
     environment:
       - PYTHONUNBUFFERED=1
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 3
 
   db:
     restart: always
