@@ -68,7 +68,7 @@ async def process_voice_message(message: types.Message):
 
 
 async def recognize_audio(recognizer, audio_data):
-    return await recognizer.recognize_google(audio_data, language="ru-RU")
+    return recognizer.recognize_google(audio_data, language="ru-RU")
 
 
 def register_handlers_message(dp: Dispatcher):
