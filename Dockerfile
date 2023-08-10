@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y ffmpeg python3 python3-pip
+RUN apt-get update && apt-get install -y python3 python3-pip && apt install ffmpeg
 
 COPY . /app
 WORKDIR /app
