@@ -148,7 +148,7 @@ class DbCommands(Database):
         users = session.query(schema.Users).all()
         for user in users:
             if user.premium:
-                current_time = datetime.now() + timedelta(hours=3)
+                current_time = datetime.now()
                 day_expire = user.subscribe_expire_day
                 if current_time > day_expire:
                     update_premium = update(schema.Users).where(schema.Users.id == user.id).values(
@@ -173,7 +173,7 @@ class DbCommands(Database):
             "1999.00": 365
         }
         days = days_by_cost[cost]
-        subscribe_expire_day = datetime.now() + timedelta(days=days, hours=3)
+        subscribe_expire_day = datetime.now() + timedelta(days=days)
         session = self.maker()
         user = session.query(schema.Users).filter_by(id=id).first()
         if user:

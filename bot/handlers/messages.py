@@ -9,8 +9,6 @@ from utils.chat_gpt_request import requests_gpt
 from aiogram import types, Dispatcher
 from bot.keyboards import register_end_dialog_button
 import pathlib
-import speech_recognition as sr
-from wit import Wit
 
 WORKDIR = str(pathlib.Path(__file__).parent.absolute())
 
@@ -25,12 +23,12 @@ async def process_message(message: types.Message):
                              dialog=True if response != Telegram.expire_text else False))
 
 
-WIT_AI_TOKEN = 'BTJ5FWE4DQKQ3QJTLLF7Z6LOVG2JDU33'
-wit_client = wit.Wit(WIT_AI_TOKEN)
+wit_client = wit.Wit(Telegram.wit_ai_token)
 wit_client.message_language = 'ru'
 
 
 async def process_voice_message(message: types.Message):
+    print("voice_message_handler")
     try:
         # Получение информации о голосовом сообщении
         file_id = message.voice.file_id
@@ -54,20 +52,16 @@ async def process_voice_message(message: types.Message):
         os.remove(ogg_audio_path)
         os.remove(wav_audio_path)
 
-        print(response)
+        recognized_text = response['text']
 
-        await message.reply(f"Распознанный текст: {response}")
-        # response_gpt = await requests_gpt(recognized_text, message.from_user.id, message.from_user.username)
-        # await message.answer(response_gpt,
-        #                      reply_markup=register_end_dialog_button(
-        #                          dialog=True if response_gpt != Telegram.expire_text else False))
+        await message.reply(f"Распознанный текст: {recognized_text}")
+        response_gpt = await requests_gpt(recognized_text, message.from_user.id, message.from_user.username)
+        await message.answer(response_gpt,
+                             reply_markup=register_end_dialog_button(
+                                 dialog=True if response_gpt != Telegram.expire_text else False))
     except Exception as e:
         print("Error in process_voice_message:", e)
         await message.reply("Ошибка при распозновании голоса")
-
-
-# async def recognize_audio(recognizer, audio_data):
-#     return recognizer.recognize_google(audio_data, language="ru-RU")
 
 
 def register_handlers_message(dp: Dispatcher):
