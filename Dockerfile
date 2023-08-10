@@ -12,7 +12,7 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 
 # Create symbolic links for logs
-RUN ln -sf /dev/stdout /var/log/app-logs/access.log \
-    && ln -sf /dev/stderr /var/log/app-logs/error.log \
+RUN ln -sf /dev/stdout /home/admin/docker-logs/access.log \
+    && ln -sf /dev/stderr /home/admin/docker-logs/error.log
 
 CMD ["python3", "run.py"]
