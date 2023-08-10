@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
+      - /home/admin/docker-logs:/var/log/myapp
     depends_on:
       - db
     restart: always
