@@ -58,16 +58,17 @@ async def process_voice_message(message: types.Message):
             # Отправляем распознанный текст в Wit.ai для дополнительного анализа
             response = wit_client.message(recognized_text)
             print(response)
+            print(recognized_text)
             intent = response['intents']
 
             await message.reply(f"Распознанный текст: {recognized_text}\nИнтент: {intent}")
     except Exception as e:
+        print(e)
         await message.answer(e)
 
 
 async def recognize_audio(recognizer, audio_data):
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, recognizer.recognize_google, audio_data)
+    return await recognizer.recognize_google(audio_data, language="ru-RU")
 
 
 def register_handlers_message(dp: Dispatcher):
