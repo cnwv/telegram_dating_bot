@@ -1,10 +1,10 @@
-import asyncio
-import io
+import os
 
+import wit
 from pydub import AudioSegment
 
 from config import Telegram
-from create_bot import bot, dp
+from create_bot import bot
 from utils.chat_gpt_request import requests_gpt
 from aiogram import types, Dispatcher
 from bot.keyboards import register_end_dialog_button
@@ -26,11 +26,11 @@ async def process_message(message: types.Message):
 
 
 WIT_AI_TOKEN = 'BTJ5FWE4DQKQ3QJTLLF7Z6LOVG2JDU33'
+wit_client = wit.Wit(WIT_AI_TOKEN)
+wit_client.message_language = 'ru'
 
 
-# @dp.message_handler(content_types=types.ContentTypes.VOICE)
 async def process_voice_message(message: types.Message):
-    wit_client = Wit(WIT_AI_TOKEN)
     try:
         # Получение информации о голосовом сообщении
         file_id = message.voice.file_id
@@ -47,28 +47,28 @@ async def process_voice_message(message: types.Message):
         wav_audio_path = "audio.wav"
         wav_audio.export(wav_audio_path, format="wav")
 
-        # Создание объекта для распознавания речи
-        recognizer = sr.Recognizer()
+        # Отправляем аудио на распознавание в Wit.ai
+        with open(wav_audio_path, "rb") as audio_file:
+            response = wit_client.speech(audio_file, headers={'Content-Type': 'audio/wav', 'Content-Language': 'ru'})
 
-        # Распознавание речи с использованием библиотеки SpeechRecognition
-        with sr.AudioFile(wav_audio_path) as source:
-            audio_data = recognizer.record(source)
-            recognized_text = await recognize_audio(recognizer, audio_data)
+        os.remove(ogg_audio_path)
+        os.remove(wav_audio_path)
 
-            # Отправляем распознанный текст в Wit.ai для дополнительного анализа
-            response = wit_client.message(recognized_text)
-            print(response)
-            print(recognized_text)
-            intent = response['intents']
+        recognized_text = response['_text']
+        print(response)
 
-            await message.reply(f"Распознанный текст: {recognized_text}\nИнтент: {intent}")
+        await message.reply(f"Распознанный текст: {recognized_text}")
+        # response_gpt = await requests_gpt(recognized_text, message.from_user.id, message.from_user.username)
+        # await message.answer(response_gpt,
+        #                      reply_markup=register_end_dialog_button(
+        #                          dialog=True if response_gpt != Telegram.expire_text else False))
     except Exception as e:
-        print(e)
-        await message.answer(e)
+        print("Error in process_voice_message:", e)
+        await message.reply("Ошибка при распозновании голоса")
 
 
-async def recognize_audio(recognizer, audio_data):
-    return recognizer.recognize_google(audio_data, language="ru-RU")
+# async def recognize_audio(recognizer, audio_data):
+#     return recognizer.recognize_google(audio_data, language="ru-RU")
 
 
 def register_handlers_message(dp: Dispatcher):
