@@ -54,10 +54,9 @@ async def process_voice_message(message: types.Message):
         os.remove(ogg_audio_path)
         os.remove(wav_audio_path)
 
-        recognized_text = response['_text']
         print(response)
 
-        await message.reply(f"Распознанный текст: {recognized_text}")
+        await message.reply(f"Распознанный текст: {response}")
         # response_gpt = await requests_gpt(recognized_text, message.from_user.id, message.from_user.username)
         # await message.answer(response_gpt,
         #                      reply_markup=register_end_dialog_button(
