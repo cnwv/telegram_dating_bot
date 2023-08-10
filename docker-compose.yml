@@ -2,7 +2,7 @@ version: '3'
 services:
   dating_bot_telegram:
     build:
-#      context: .
+      context: .
       dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
