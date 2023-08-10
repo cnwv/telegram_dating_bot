@@ -57,7 +57,8 @@ async def process_voice_message(message: types.Message):
 
             # Отправляем распознанный текст в Wit.ai для дополнительного анализа
             response = wit_client.message(recognized_text)
-            intent = response['intents'][0]['name']
+            print(response)
+            intent = response['intents']
 
             await message.reply(f"Распознанный текст: {recognized_text}\nИнтент: {intent}")
     except Exception as e:
