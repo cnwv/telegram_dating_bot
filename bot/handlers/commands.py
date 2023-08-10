@@ -16,9 +16,8 @@ async def create_user(message: types.Message):
 
 
 @dp.message_handler(commands=['restart'])
-async def restart_command(message: types.Message, state: FSMContext):
+async def restart_command(message: types.Message):
     db.delete_message(message.from_user.id)
-    await state.finish()
     await message.answer("Бот перезагружен. Вы можете начать заново. Нажмите /start, чтобы начать новое знакомство")
 
 
