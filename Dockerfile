@@ -1,6 +1,11 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y python3 python3-pip && apt install ffmpeg -y
+ENV TZ=Europe/Moscow DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+
+RUN apt-get install -y --no-install-recommends  ffmpeg
 
 COPY . /app
 WORKDIR /app
