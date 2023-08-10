@@ -55,7 +55,10 @@ async def process_voice_message(message: types.Message):
         recognized_text = response['text']
 
         await message.reply(f"Распознанный текст: {recognized_text}")
+        sticker = await bot.send_sticker(chat_id=message.from_user.id,
+                                         sticker=r"CAACAgIAAxkBAAEJk11ko1ef60EMUUHgRUS9der_oBAmlwACIwADKA9qFCdRJeeMIKQGLwQ")
         response_gpt = await requests_gpt(recognized_text, message.from_user.id, message.from_user.username)
+        await bot.delete_message(chat_id=message.from_user.id, message_id=sticker.message_id)
         await message.answer(response_gpt,
                              reply_markup=register_end_dialog_button(
                                  dialog=True if response_gpt != Telegram.expire_text else False))
